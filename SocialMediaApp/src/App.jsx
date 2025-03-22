@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import axios from "axios";
 
+const ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzQyNjI3NzIyLCJpYXQiOjE3NDI2Mjc0MjIsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6IjA1MjhjOTU3LWJkNTEtNDEwNC1hZTk2LTI3NWYzYWUzNjc1MSIsInN1YiI6IjcxNzgyMmYxMzNAa2NlLmFjLmluIn0sImNvbXBhbnlOYW1lIjoiZ29NYXJ0IiwiY2xpZW50SUQiOiIwNTI4Yzk1Ny1iZDUxLTQxMDQtYWU5Ni0yNzVmM2FlMzY3NTEiLCJjbGllbnRTZWNyZXQiOiJBYXJEWkR3ZHltbnpubEFZIiwib3duZXJOYW1lIjoiTXV0aHVrdW1hcmFuIiwib3duZXJFbWFpbCI6IjcxNzgyMmYxMzNAa2NlLmFjLmluIiwicm9sbE5vIjoiNzE3ODIyZjEzMyJ9.3BF4Btn2i8kuJQiEiaWHyheEIzo_tuQzhx_V6Zr9mBk";
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -10,13 +12,17 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResponse = await axios.get('http://20.244.56.144/test/users');
+        const userResponse = await axios.get('http://20.244.56.144/test/users', {
+          headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+        });
         const usersData = userResponse.data.users;
         setUsers(usersData);
 
         const postsData = [];
         for (const userId of Object.keys(usersData)) {
-          const postResponse = await axios.get(`http://20.244.56.144/test/users/${userId}/posts`);
+          const postResponse = await axios.get(`http://20.244.56.144/test/users/${userId}/posts`, {
+            headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+          });
           postsData.push(...postResponse.data.posts);
         }
         setPosts(postsData);
@@ -33,7 +39,9 @@ function App() {
 
         const postCommentCount = [];
         for (const post of postsData) {
-          const commentResponse = await axios.get(`http://20.244.56.144/test/posts/${post.id}/comments`);
+          const commentResponse = await axios.get(`http://20.244.56.144/test/posts/${post.id}/comments`, {
+            headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+          });
           postCommentCount.push({ ...post, commentCount: commentResponse.data.comments.length });
         }
         const sortedTrending = postCommentCount.sort((a, b) => b.commentCount - a.commentCount);
@@ -82,4 +90,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
